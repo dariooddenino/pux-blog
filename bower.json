@@ -9,6 +9,9 @@
   "license": "BSD3",
   "dependencies": {
     "purescript-pux": "^5.0.1",
-    "purescript-pux-devtool": "^3.0.0"
+    "purescript-pux-devtool": "^3.0.0",
+    "purescript-aff": "^1.1.0",
+    "purescript-argonaut": "^1.0.0",
+    "purescript-affjax": "^1.1.0"
   }
 }

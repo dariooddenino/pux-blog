@@ -1,23 +1,27 @@
 module App.Layout where
 
 import App.Counter as Counter
+import App.Post as Post
 import App.NotFound as NotFound
-import App.Routes (Route(Home, NotFound))
+import App.Routes (Route(Home, NotFound, Posts))
 import Prelude (($), map)
 import Pux.Html (Html, div, h1, p, text)
 
 data Action
   = Child (Counter.Action)
+  | PostC (Post.Action)
   | PageView Route
 
 type State =
   { route :: Route
-  , count :: Counter.State }
+  , post :: Post
+  }
 
 init :: State
 init =
   { route: NotFound
-  , count: Counter.init }
+  , post: Post.init
+  }
 
 update :: Action -> State -> State
 update (PageView route) state = state { route = route }
@@ -30,6 +34,7 @@ view state =
     [ h1 [] [ text "Pux Starter App" ]
     , p [] [ text "Change src/Layout.purs and watch me hot-reload." ]
     , case state.route of
-        Home -> map Child $ Counter.view state.count
+        Home -> NotFound.view state
+        (Posts id) -> map PostC $ Post.view state.post
         NotFound -> NotFound.view state
     ]
