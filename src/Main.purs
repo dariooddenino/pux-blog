@@ -10,8 +10,9 @@ import Pux (App, Config, CoreEffects, fromSimple, renderToDOM, start)
 import Pux.Devtool (Action, start) as Pux.Devtool
 import Pux.Router (sampleUrl)
 import Signal ((~>))
+import Network.HTTP.Affjax (AJAX)
 
-type AppEffects = (dom :: DOM)
+type AppEffects = (dom :: DOM, ajax :: AJAX)
 
 -- | App configuration
 config :: forall eff. State -> Eff (dom :: DOM | eff) (Config State Action AppEffects)
@@ -24,7 +25,8 @@ config state = do
 
   pure
     { initialState: state
-    , update: fromSimple update
+    -- , update: fromSimple update
+    , update: update
     , view: view
     , inputs: [routeSignal] }
 

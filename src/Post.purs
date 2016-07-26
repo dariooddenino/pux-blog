@@ -38,7 +38,7 @@ init = { post: Post { id: -1
 
 instance decodeJsonPost :: DecodeJson Post where
   decodeJson json = do
-    obj <- decodeJson
+    obj <- decodeJson json
     id <- obj .? "id"
     userId <- obj .? "userId"
     title <- obj .? "title"
@@ -67,5 +67,5 @@ view { status, post } =
   div []
     [ h1 [] [ text status ]
     , div []
-      [ text "Post: " <> post.title ]
+      [ text $ "Post: " <> "ciao" ]
     ]

@@ -7,3 +7,5 @@ static/dist
 npm-debug.log
 **DS_Store
 .psc-ide-port
+psc-ide-server.tix
+psc.tix
