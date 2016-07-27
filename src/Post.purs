@@ -13,7 +13,7 @@ newtype Post = Post
  { id :: Int
  , userId :: Int
  , title :: String
- , body :: String
+ -- , body :: String
  }
 
 type State =
@@ -31,7 +31,7 @@ init :: State
 init = { post: Post { id: -1
                     , userId: -1
                     , title: ""
-                    , body: ""
+                    -- , body: ""
                     }
        , status: ""
        }
@@ -42,8 +42,8 @@ instance decodeJsonPost :: DecodeJson Post where
     id <- obj .? "id"
     userId <- obj .? "userId"
     title <- obj .? "title"
-    body <- obj .? "body"
-    pure $ Post { id, userId, title, body }
+    -- body <- obj .? "body"
+    pure $ Post { id, userId, title }
 
 update :: Action -> State -> EffModel State Action (ajax :: AJAX)
 update (ReceivePost (Left err)) state =

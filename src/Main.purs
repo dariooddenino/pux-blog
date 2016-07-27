@@ -6,7 +6,7 @@ import Control.Bind ((=<<))
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import Prelude (bind, pure)
-import Pux (App, Config, CoreEffects, fromSimple, renderToDOM, start)
+import Pux (App, Config, CoreEffects, renderToDOM, start)
 import Pux.Devtool (Action, start) as Pux.Devtool
 import Pux.Router (sampleUrl)
 import Signal ((~>))
