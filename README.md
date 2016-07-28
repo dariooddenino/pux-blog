@@ -1,38 +1,24 @@
-# pux-starter-app
+# pux-blog
 
-Starter [Pux](https://github.com/alexmingoia/purescript-pux/) application using
-webpack with hot-reloading and time-travel debug using
-[pux-devtool](https://github.com/alexmingoia/pux-devtool).
+Toy project to learn how Pux works
 
-See the [Guide](https://alexmingoia.github.io/purescript-pux) for help learning
-Pux.
+## Goals
 
-![Pux starter app animation](support/pux-starter-app.gif)
+- Ajax
+- Routing
+- Nested components
+- ?
 
-## Installation
+## Setup
 
-```sh
-git clone git://github.com/alexmingoia/pux-starter-app.git example
-cd example
-npm install
-npm start
-```
+`npm i && bower i`
 
-Visit `http://localhost:3000` in your browser, edit `src/purs/Layout.purs`
-and watch the magic!
+## Run
 
-## Available scripts
+`node server.js`
 
-### watch
+and then
 
-`npm start` or `npm run watch` will start a development server, which
-hot-reloads your application when sources changes.
+`npm start`
 
-### serve
-
-`npm run serve` serves your application without watching for changes or
-hot-reloading.
-
-### build
-
-`npm run build` bundles and minifies your application to run in production mode.
+visit `http://localhost:3000`
