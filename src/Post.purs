@@ -1,16 +1,18 @@
 module App.Post where
 
-import Prelude
-import Data.Either (Either(..), either)
-import Data.Argonaut (class DecodeJson, decodeJson, (.?))
-import Pux (EffModel, noEffects)
-import Pux.Html (Html, div, h1, h2, p, text)
-import Network.HTTP.Affjax (AJAX, get, post, put)
+import Prelude (bind, (<>), ($), pure, show, (<<<))
 import Control.Monad.Aff (attempt)
 import DOM (DOM)
+import Data.Argonaut (jsonEmptyObject, class DecodeJson, decodeJson, (.?), class EncodeJson, encodeJson, (:=), (~>))
+import Data.Either (Either(..), either)
+import Network.HTTP.Affjax (AJAX, get, post, put)
+import Pux (EffModel, noEffects)
+import Pux.Html (Html, div, h1, h2, p, text)
+import Data.Maybe (Maybe(..))
+import Pux.Router (link)
 
 newtype Post = Post
- { id :: Int
+ { id :: Maybe Int
  , title :: String
  , body :: String
  }
@@ -27,7 +29,7 @@ data Action
   | EditPost
 
 init :: State
-init = { post: Post { id: -1
+init = { post: Post { id: Nothing
                     , title: ""
                     , body: ""
                     }
@@ -41,6 +43,13 @@ instance decodeJsonPost :: DecodeJson Post where
     title <- obj .? "title"
     body <- obj .? "body"
     pure $ Post { id, title, body }
+
+instance encodeJsonPost :: EncodeJson Post where
+  encodeJson (Post post)
+    = "id" := post.id
+    ~> "title" := post.title
+    ~> "body" := post.body
+    ~> jsonEmptyObject
 
 update :: Action -> State -> EffModel State Action (dom :: DOM, ajax :: AJAX)
 update (ReceivePost (Left err)) state =
@@ -60,15 +69,16 @@ update (DeletePost) state = noEffects $ state
 update (EditPost) state = noEffects $ state
 
 view :: State -> Html Action
-view { status, post } =
-  div []
-    [ h1 [] [ text status ]
-    , postView post
-    ]
+view { status: status, post: (Post post) } =
+      case post.id of
+        Nothing -> div [] []
+        (Just id) ->
+          div []
+          [ h1 [] [ text status ]
+          , link ("/posts/" <> show id <> "/edit") [] [ text "Edit" ]
+          , div []
+            [ h2 [] [ text post.title ]
+            , p [] [ text post.body ]
+            ]
+          ]
 
-postView :: Post -> Html Action
-postView (Post post) =
-  div []
-  [ h2 [] [ text post.title ]
-  , p [] [ text post.body ]
-  ]

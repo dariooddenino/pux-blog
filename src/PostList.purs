@@ -1,6 +1,6 @@
 module App.PostList where
 
-import Prelude
+import Prelude (bind, ($), (<>), show, (<<<), pure, map)
 import Data.Either (Either(..), either)
 import Pux (EffModel, noEffects)
 import Pux.Html (Html, div, h1, text, ol, li, h2)
@@ -10,6 +10,7 @@ import Network.HTTP.Affjax (AJAX, get)
 import Control.Monad.Aff (attempt)
 import Data.Argonaut (decodeJson)
 import DOM (DOM)
+import Data.Maybe (Maybe(..))
 
 import App.Post as P
 
@@ -46,14 +47,16 @@ view :: State -> Html Action
 view state =
   div []
     [ h1 [] [ text state.status ]
-    , ol [] $ map post state.posts 
+    , ol [] $ map post state.posts
     ]
 
 post :: P.Post -> Html Action
 post (P.Post p) =
-  li [ key (show p.id), className "post" ]
-    [ h2 []
-      [ link ("/posts/" <> show p.id) []
-        [ text p.title ]
-      ]
-    ]
+  case p.id of
+    Nothing -> li [] [ text "Error" ]
+    (Just id) -> li [ key (show id), className "post" ]
+                 [ h2 []
+                   [ link ("/posts/" <> show id) []
+                     [ text p.title ]
+                   ]
+                 ]

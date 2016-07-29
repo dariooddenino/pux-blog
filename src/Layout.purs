@@ -3,7 +3,7 @@ module App.Layout where
 import App.Post as P
 import App.PostList as PL
 import App.NotFound as NotFound
-import App.Routes (Route(Home, NotFound, Posts))
+import App.Routes
 import Prelude
 import Pux.Html (Html, div, h1, text)
 import Network.HTTP.Affjax (AJAX)
@@ -42,7 +42,7 @@ update (PostL action) state = PL.update action state.postList
 routeEffects :: Route -> State -> EffModel State Action (dom :: DOM, ajax :: AJAX)
 routeEffects Home state = { state: state
                           , effects: [ pure PL.RequestPosts ] } # mapEffects PostL
-routeEffects (Posts id) state = { state: state
+routeEffects (Posts _ id) state = { state: state
                                , effects: [ pure (P.RequestPost id) ] } # mapEffects PostC
 routeEffects _ state = noEffects $ state
 
@@ -54,6 +54,8 @@ view state =
     [ h1 [] [ link "/" [] [ text "Pux Blog" ] ] 
     , case state.route of
         Home -> map PostL $ PL.view state.postList
-        (Posts id) -> map PostC $ P.view state.post
+        (Posts View id) -> map PostC $ P.view state.post
+        (Posts Edit id) -> map PostC $ P.view state.post
+        AddPost -> map PostC $ P.view state.post
         NotFound -> NotFound.view state
     ]
