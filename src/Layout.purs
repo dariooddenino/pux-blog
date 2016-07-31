@@ -4,7 +4,7 @@ import App.Post as P
 import App.PostList as PL
 import App.NotFound as NotFound
 import App.Routes
-import Prelude
+import Prelude (map, pure, ($), (#))
 import Pux.Html (Html, div, h1, text)
 import Network.HTTP.Affjax (AJAX)
 import Pux (EffModel, noEffects, mapEffects, mapState)
@@ -55,7 +55,7 @@ view state =
     , case state.route of
         Home -> map PostL $ PL.view state.postList
         (Posts View id) -> map PostC $ P.view state.post
-        (Posts Edit id) -> map PostC $ P.view state.post
+        (Posts Edit id) -> map PostC $ P.editView state.post
         AddPost -> map PostC $ P.view state.post
         NotFound -> NotFound.view state
     ]

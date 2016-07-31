@@ -82,7 +82,7 @@ server.route({
   handler: function (req, reply) {
     let modified;
     posts.map((p) => {
-      if (p.id === req.params.id) {
+      if (p.id == req.params.id) {
         p.title = req.payload.title;
         p.body = req.payload.body;
         modified = p;

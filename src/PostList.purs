@@ -1,22 +1,24 @@
 module App.PostList where
 
-import Prelude (bind, ($), (<>), show, (<<<), pure, map)
+import Prelude (bind, ($), (<>), show, (<<<), pure, map, const)
 import Data.Either (Either(..), either)
 import Pux (EffModel, noEffects)
-import Pux.Html (Html, div, h1, text, ol, li, h2)
-import Pux.Html.Attributes (key, className)
+import Pux.Html (Html, div, h1, text, ol, li, h2, button)
+import Pux.Html.Attributes (key, className, type_)
+import Pux.Html.Events (onClick)
 import Pux.Router (link)
-import Network.HTTP.Affjax (AJAX, get)
+import Network.HTTP.Affjax (AJAX, get, post)
 import Control.Monad.Aff (attempt)
-import Data.Argonaut (decodeJson)
+import Data.Argonaut (decodeJson, encodeJson)
 import DOM (DOM)
 import Data.Maybe (Maybe(..))
+import Data.Array (snoc)
 
 import App.Post as P
 
 type Posts = Array P.Post
 
-data Action = RequestPosts | ReceivePosts (Either String Posts)
+data Action = RequestPosts | ReceivePosts (Either String Posts) | CreatePost
 
 type State =
   { posts :: Posts
@@ -42,16 +44,26 @@ update (RequestPosts) state =
       pure $ ReceivePosts posts
     ]
   }
+update (CreatePost) state =
+  { state: state { status = "Creating post" }
+  , effects: [ do
+      res <- attempt $ post "http://localhost:3001/api/posts" (encodeJson P.init.post)
+      let decode r = decodeJson r.response :: Either String P.Post
+      let newPost = either (Left <<< show) decode res
+      pure $ ReceivePosts (map (snoc state.posts) newPost)
+    ]
+  }
 
 view :: State -> Html Action
 view state =
   div []
     [ h1 [] [ text state.status ]
-    , ol [] $ map post state.posts
+    , button [ type_ "button", onClick (const CreatePost) ] [ text "Create new post" ]
+    , ol [] $ map postView state.posts
     ]
 
-post :: P.Post -> Html Action
-post (P.Post p) =
+postView :: P.Post -> Html Action
+postView (P.Post p) =
   case p.id of
     Nothing -> li [] [ text "Error" ]
     (Just id) -> li [ key (show id), className "post" ]
