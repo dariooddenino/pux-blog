@@ -56,6 +56,5 @@ view state =
         Home -> map PostL $ PL.view state.postList
         (Posts View id) -> map PostC $ P.view state.post
         (Posts Edit id) -> map PostC $ P.editView state.post
-        AddPost -> map PostC $ P.view state.post
         NotFound -> NotFound.view state
     ]

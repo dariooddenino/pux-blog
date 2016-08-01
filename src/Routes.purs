@@ -9,7 +9,7 @@ import Control.Apply ((<*), (*>), (<*>))
 
 data Act = View | Edit
 
-data Route = Home | Posts Act Int | AddPost | NotFound
+data Route = Home | Posts Act Int | NotFound
 
 
 match :: String -> Route
@@ -19,5 +19,3 @@ match url = fromMaybe NotFound $ router url $
   Posts View <$> (lit "posts" *> int) <* end
   <|>
   Posts Edit <$> (lit "posts" *> int <* lit "edit") <* end
-  <|>
-  AddPost <$ (lit "posts" <* lit "create") <* end
