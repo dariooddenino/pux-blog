@@ -1,6 +1,8 @@
 # pux-blog
 
-Toy project to learn how Pux works
+Toy project to learn how Pux works.
+
+It's a simplified blog structure, with routes triggering ajax calls and basic CRUD operations.
 
 ## Goals
 
