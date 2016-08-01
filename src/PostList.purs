@@ -1,24 +1,23 @@
 module App.PostList where
 
-import Prelude (bind, ($), (<>), show, (<<<), pure, map, const)
+import App.Post as P
+import Control.Monad.Aff (attempt)
+import DOM (DOM)
+import Data.Argonaut (decodeJson, encodeJson)
+import Data.Array (snoc, filter)
 import Data.Either (Either(..), either)
+import Data.Maybe (Maybe(..))
+import Network.HTTP.Affjax (AJAX, get, post, delete)
+import Prelude (bind, ($), (<>), show, (<<<), pure, map, const, (/=))
 import Pux (EffModel, noEffects)
 import Pux.Html (Html, div, h1, text, ol, li, h2, button)
 import Pux.Html.Attributes (key, className, type_)
 import Pux.Html.Events (onClick)
 import Pux.Router (link)
-import Network.HTTP.Affjax (AJAX, get, post)
-import Control.Monad.Aff (attempt)
-import Data.Argonaut (decodeJson, encodeJson)
-import DOM (DOM)
-import Data.Maybe (Maybe(..))
-import Data.Array (snoc)
-
-import App.Post as P
 
 type Posts = Array P.Post
 
-data Action = RequestPosts | ReceivePosts (Either String Posts) | CreatePost
+data Action = RequestPosts | ReceivePosts (Either String Posts) | CreatePost | DeletePost Int
 
 type State =
   { posts :: Posts
@@ -53,6 +52,17 @@ update (CreatePost) state =
       pure $ ReceivePosts (map (snoc state.posts) newPost)
     ]
   }
+update (DeletePost id) state =
+  { state: state { status = "Deleting post" }
+  , effects: [ do
+      res <- attempt $ delete ("http://localhost:3001/api/posts/" <> show id)
+      let decode r = decodeJson r.response :: Either String Boolean
+      let response = either (Left <<< show) decode res
+      case response of
+        (Left err) -> pure $ ReceivePosts (Left err)
+        (Right _) -> pure $ ReceivePosts $ Right (filter (\ (P.Post p) -> p.id /= Just id) state.posts)
+   ]
+  }
 
 view :: State -> Html Action
 view state =
@@ -65,10 +75,11 @@ view state =
 postView :: P.Post -> Html Action
 postView (P.Post p) =
   case p.id of
-    Nothing -> li [] [ text "Error" ]
+    Nothing -> li [] []
     (Just id) -> li [ key (show id), className "post" ]
                  [ h2 []
                    [ link ("/posts/" <> show id) []
                      [ text p.title ]
                    ]
+                 , button [ type_ "submit", onClick (const $ DeletePost id) ] [ text "Delete" ]
                  ]

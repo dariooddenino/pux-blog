@@ -69,9 +69,13 @@ server.route({
   method: 'DELETE',
   path: '/api/posts/{id}',
   handler: function (req, reply) {
+    let pLength = posts.length;
     posts = posts.filter((p) => {
-      return p.id !== req.params.id;
+      return p.id != req.params.id;
     });
+    if (pLength == posts.length) {
+      return reply('Post not found').code(404);
+    }
     return reply(true);
   }
 });
